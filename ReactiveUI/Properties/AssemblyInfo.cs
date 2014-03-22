@@ -14,5 +14,6 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("ReactiveUI.Gtk")]
 [assembly: InternalsVisibleTo("ReactiveUI.Cocoa")]
 [assembly: InternalsVisibleTo("ReactiveUI.Android")]
+[assembly: InternalsVisibleTo("ReactiveUI.Android.Support.v7")]
 [assembly: InternalsVisibleTo("ReactiveUI.Mobile")]
 [assembly: InternalsVisibleTo("ReactiveUI.Winforms")]

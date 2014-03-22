@@ -7,7 +7,9 @@ using System.Text;
 using Android.App;
 using Android.Views;
 using Java.Interop;
+#if ANDROID_2
 using SupportFragment = Android.Support.V4.App.Fragment;
+#endif
 
 namespace ReactiveUI.Android
 {
@@ -56,13 +58,20 @@ namespace ReactiveUI.Android
             return (T)getCachedControl(propertyName, This,
                 () => This.FindViewById(controlIds[propertyName.ToLowerInvariant()]).JavaCast<T>());
         }
-
+#if ANDROID_4
         public static T GetControl<T>(this Fragment This, [CallerMemberName]string propertyName = null, string prefix = null)
             where T : View
         {
             return GetControl<T>(This.View, propertyName, prefix);
         }
-
+#endif
+#if ANDROID_2
+        public static T GetControl<T>(this SupportFragment This, [CallerMemberName]string propertyName = null, string prefix = null)
+            where T : View
+        {
+            return GetControl<T>(This.View, propertyName, prefix);
+        }
+#endif
         public static void WireUpControls(this ILayoutViewHost This, string prefix = null)
         {
             var members = This.GetType().GetRuntimeProperties()
@@ -82,7 +91,11 @@ namespace ReactiveUI.Android
             });
         }
 
-
+        /// <summary>
+        /// This should be called in the Fragement's OnCreateView, with the newly inflated layout
+        /// </summary>
+        /// <param name="This">The this.</param>
+        /// <param name="prefix">The prefix.</param>
         public static void WireUpControls(this View This, string prefix = null)
         {
             var members = This.GetType().GetRuntimeProperties()
@@ -102,11 +115,13 @@ namespace ReactiveUI.Android
             });
         }
 
+#if ANDROID_2
         /// <summary>
         /// This should be called in the Fragement's OnCreateView, with the newly inflated layout
         /// </summary>
-        /// <param name="This"></param>
-        /// <param name="inflatedView"></param>
+        /// <param name="This">The this.</param>
+        /// <param name="inflatedView">The inflated view.</param>
+        /// <param name="prefix">The prefix.</param>
         public static void WireUpControls(this SupportFragment This, View inflatedView, string prefix = null)
         {
             var members = This.GetType().GetRuntimeProperties()
@@ -129,12 +144,14 @@ namespace ReactiveUI.Android
                 }
             });
         }
-
+#endif
+#if ANDROID_4
         /// <summary>
         /// This should be called in the Fragement's OnCreateView, with the newly inflated layout
         /// </summary>
-        /// <param name="This"></param>
-        /// <param name="inflatedView"></param>
+        /// <param name="This">The this.</param>
+        /// <param name="inflatedView">The inflated view.</param>
+        /// <param name="prefix">The prefix.</param>
         public static void WireUpControls(this Fragment This, View inflatedView, string prefix = null)
         {
             var members = This.GetType().GetRuntimeProperties()
@@ -153,7 +170,7 @@ namespace ReactiveUI.Android
                 }
             });
         }
-
+#endif
         public static void WireUpControls(this Activity This, string prefix = null)
         {
             var members = This.GetType().GetRuntimeProperties()
