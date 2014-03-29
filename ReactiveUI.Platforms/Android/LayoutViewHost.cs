@@ -64,12 +64,12 @@ namespace ReactiveUI.Android
         {
         }
 
-        protected LayoutViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
+        protected LayoutViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true, string prefix = null)
         {
             var inflater = LayoutInflater.FromContext(ctx);
             View = inflater.Inflate(layoutId, parent, attachToRoot);
 
-            if (performAutoWireup) this.WireUpControls();
+            if (performAutoWireup) this.WireUpControls(prefix);
         }
     }
 
@@ -77,8 +77,8 @@ namespace ReactiveUI.Android
         where TViewModel : class, IReactiveNotifyPropertyChanged
     {
 
-        protected ReactiveViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true)
-            : base(ctx, layoutId, parent, attachToRoot, performAutoWireup)
+        protected ReactiveViewHost(Context ctx, int layoutId, ViewGroup parent, bool attachToRoot = false, bool performAutoWireup = true, string prefix = null)
+            : base(ctx, layoutId, parent, attachToRoot, performAutoWireup, prefix)
         {
             setupRxObj();
         }
