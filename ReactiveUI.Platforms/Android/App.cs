@@ -18,7 +18,7 @@ using Splat;
 
 namespace ReactiveUI.Android
 {
-    public abstract class App : Application, IEnableLogger
+    public abstract class App : Application, IEnableLogger, IPlatformOperations
     {
 
         private static App _current;
@@ -111,7 +111,46 @@ namespace ReactiveUI.Android
             // When the unhandled exception handler has fired, the application has already crashed!!!
             //this.LogException(e.Exception, 0, 0);
             this.Log().ErrorException("AppUnhandledException: : " + e.Exception.GetType().FullName, e.Exception);
-        } 
+        }
 
+        /// <summary>
+        /// Gets the orientation.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public string GetOrientation()
+        {
+            var wm = Context.GetSystemService(WindowService) as IWindowManager;
+            if (wm == null) return null;
+
+            var disp = wm.DefaultDisplay;
+            if (disp == null) return null;
+
+            return disp.Rotation.ToString();
+        }
+
+        /// <summary>
+        /// Gets the orientation.
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="System.NotImplementedException"></exception>
+        public DeviceOrientation GetOrientationEnum()
+        {
+            var wm = Context.GetSystemService(WindowService) as IWindowManager;
+            if (wm == null) return DeviceOrientation.None;
+
+            var disp = wm.DefaultDisplay;
+            if (disp == null) return DeviceOrientation.None;
+
+            if (disp.Orientation == 1)
+            {
+                return DeviceOrientation.Portrait;
+            }
+            if (disp.Orientation == 2)
+            {
+                return DeviceOrientation.Landscape;
+            }
+            return DeviceOrientation.None;
+        }
     }
 }
