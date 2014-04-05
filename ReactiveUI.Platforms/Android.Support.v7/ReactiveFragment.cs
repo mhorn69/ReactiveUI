@@ -28,10 +28,10 @@ namespace ReactiveUI.Android
     /// This is a SherlockFragment that is both an ReactiveSupportFragment and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveSupportFragment<TViewModel> : ReactiveSupportFragment, IViewFor<TViewModel>, ICanActivate
+    public class ReactiveFragment<TViewModel> : ReactiveFragment, IViewFor<TViewModel>, ICanActivate
         where TViewModel : class, IReactiveNotifyPropertyChanged
     {
-        protected ReactiveSupportFragment() { }
+        protected ReactiveFragment() { }
 
         TViewModel _ViewModel;
         public TViewModel ViewModel
@@ -51,9 +51,9 @@ namespace ReactiveUI.Android
     /// This is a SherlockFragment that is both an ReactiveSupportFragment and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveSupportFragment : SupportFragment, IReactiveNotifyPropertyChanged, IReactiveObjectExtension, IHandleObservableErrors
+    public class ReactiveFragment : SupportFragment, IReactiveNotifyPropertyChanged, IReactiveObjectExtension, IHandleObservableErrors
     {
-        protected ReactiveSupportFragment() 
+        protected ReactiveFragment() 
         {
             this.setupReactiveExtension();
         }

@@ -71,7 +71,7 @@
     </Compile>
     <Compile Include="Android.Support.v7\Properties\AssemblyInfo.cs" />
     <Compile Include="Android.Support.v7\ReactiveActionBarActivity.cs" />
-    <Compile Include="Android.Support.v7\ReactiveSupportFragment.cs" />
+    <Compile Include="Android.Support.v7\ReactiveFragment.cs" />
     <Compile Include="Android\ActivityRoutedViewHost.cs" />
     <Compile Include="Android\AndroidCommandBinders.cs" />
     <Compile Include="Android\AndroidDefaultPropertyBinding.cs" />
