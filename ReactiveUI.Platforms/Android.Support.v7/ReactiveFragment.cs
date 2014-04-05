@@ -29,7 +29,7 @@ namespace ReactiveUI.Android
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
     public class ReactiveFragment<TViewModel> : ReactiveFragment, IViewFor<TViewModel>, ICanActivate
-        where TViewModel : class, IReactiveNotifyPropertyChanged
+        where TViewModel : class
     {
         protected ReactiveFragment() { }
 
@@ -51,45 +51,48 @@ namespace ReactiveUI.Android
     /// This is a SherlockFragment that is both an ReactiveSupportFragment and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveFragment : SupportFragment, IReactiveNotifyPropertyChanged, IReactiveObjectExtension, IHandleObservableErrors
+    public class ReactiveFragment : SupportFragment, IReactiveNotifyPropertyChanged<ReactiveFragment>, IReactiveObject, IHandleObservableErrors
     {
         protected ReactiveFragment() 
         {
-            this.setupReactiveExtension();
         }
 
-        public event PropertyChangingEventHandler PropertyChanging;
-
-        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        public event PropertyChangingEventHandler PropertyChanging
         {
-            var handler = PropertyChanging;
-            if (handler != null) {
-                handler(this, args);
-            }
+            add { PropertyChangingEventManager.AddHandler(this, value); }
+            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
-            var handler = PropertyChanged;
-            if (handler != null) {
-                handler(this, args);
-            }
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add { PropertyChangedEventManager.AddHandler(this, value); }
+            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+        }
+
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changing {
+        public IObservable<IObservedChange<ReactiveFragment, object>> Changing
+        {
             get { return this.getChangingObservable(); }
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changed {
+        public IObservable<IObservedChange<ReactiveFragment, object>> Changed
+        {
             get { return this.getChangedObservable(); }
         }
 
@@ -102,7 +105,7 @@ namespace ReactiveUI.Android
         /// notifications.</returns>
         public IDisposable SuppressChangeNotifications()
         {
-            return this.SuppressChangeNotifications();
+            return this.suppressChangeNotifications();
         }
 
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }

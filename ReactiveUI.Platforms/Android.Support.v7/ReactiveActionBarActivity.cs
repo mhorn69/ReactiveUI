@@ -31,7 +31,7 @@ namespace ReactiveUI.Android
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
     public class ReactiveActionBarActivity<TViewModel> : ReactiveActionBarActivity, IViewFor<TViewModel>, ICanActivate
-        where TViewModel : class, IReactiveNotifyPropertyChanged
+        where TViewModel : class
     {
         protected ReactiveActionBarActivity() { }
 
@@ -53,46 +53,49 @@ namespace ReactiveUI.Android
     /// This is an SherlockFragmentActivity that is both an ActionBarActivity and has ReactiveObject powers 
     /// (i.e. you can call RaiseAndSetIfChanged)
     /// </summary>
-    public class ReactiveActionBarActivity : ActionBarActivity, IReactiveObjectExtension, IReactiveNotifyPropertyChanged, IHandleObservableErrors
+    public class ReactiveActionBarActivity : ActionBarActivity, IReactiveNotifyPropertyChanged<ActionBarActivity>, IReactiveObject, IHandleObservableErrors
     {
         protected ReactiveActionBarActivity() 
         {
             RxApp.MainThreadScheduler = new WaitForDispatcherScheduler(() => new AndroidUIScheduler(this));
-            this.setupReactiveExtension();
         }
 
-        public event PropertyChangingEventHandler PropertyChanging;
-
-        void IReactiveObjectExtension.RaisePropertyChanging(PropertyChangingEventArgs args) 
+        public event PropertyChangingEventHandler PropertyChanging
         {
-            var handler = PropertyChanging;
-            if (handler != null) {
-                handler(this, args);
-            }
+            add { PropertyChangingEventManager.AddHandler(this, value); }
+            remove { PropertyChangingEventManager.RemoveHandler(this, value); }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        void IReactiveObjectExtension.RaisePropertyChanged(PropertyChangedEventArgs args) 
+        void IReactiveObject.RaisePropertyChanging(PropertyChangingEventArgs args)
         {
-            var handler = PropertyChanged;
-            if (handler != null) {
-                handler(this, args);
-            }
+            PropertyChangingEventManager.DeliverEvent(this, args);
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged
+        {
+            add { PropertyChangedEventManager.AddHandler(this, value); }
+            remove { PropertyChangedEventManager.RemoveHandler(this, value); }
+        }
+
+        void IReactiveObject.RaisePropertyChanged(PropertyChangedEventArgs args)
+        {
+            PropertyChangedEventManager.DeliverEvent(this, args);
         }
 
         /// <summary>
         /// Represents an Observable that fires *before* a property is about to
         /// be changed.         
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changing {
+        public IObservable<IObservedChange<ActionBarActivity, object>> Changing
+        {
             get { return this.getChangingObservable(); }
         }
 
         /// <summary>
         /// Represents an Observable that fires *after* a property has changed.
         /// </summary>
-        public IObservable<IObservedChange<object, object>> Changed {
+        public IObservable<IObservedChange<ActionBarActivity, object>> Changed
+        {
             get { return this.getChangedObservable(); }
         }
 
@@ -105,7 +108,7 @@ namespace ReactiveUI.Android
         /// notifications.</returns>
         public IDisposable SuppressChangeNotifications()
         {
-            return this.SuppressChangeNotifications();
+            return this.suppressChangeNotifications();
         }
 
         public IObservable<Exception> ThrownExceptions { get { return this.getThrownExceptionsObservable(); } }
