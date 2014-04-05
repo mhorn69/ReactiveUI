@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Linq.Expressions;
 using System.Reactive.Disposables;
+using Splat;
 
 namespace ReactiveUI
 {
@@ -114,19 +115,17 @@ namespace ReactiveUI
             this.executeAsync = executeAsync;
 
             this.canExecute = canExecute.CombineLatest(isExecuting.StartWith(false), (ce, ie) => ce && !ie)
-                .Catch<bool, Exception>(ex =>
-                {
+                .Catch<bool, Exception>(ex => {
                     exceptions.OnNext(ex);
                     return Observable.Return(false);
                 })
-                .Do(x =>
-                {
-                    var fireCanExecuteChanged = (canExecuteChanged != null && canExecuteLatest != x);
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Do(x => {
+                    var fireCanExecuteChanged = (canExecuteLatest != x);
                     canExecuteLatest = x;
 
-                    if (fireCanExecuteChanged)
-                    {
-                        canExecuteChanged(this, EventArgs.Empty);
+                    if (fireCanExecuteChanged) {
+                        CanExecuteChangedEventManager.DeliverEvent(this, EventArgs.Empty);
                     }
                 })
                 .Publish();
@@ -136,19 +135,14 @@ namespace ReactiveUI
 
         public IObservable<T> ExecuteAsync(object parameter = null)
         {
-            var ret = Observable.Create<T>(subj =>
-            {
-                if (Interlocked.Increment(ref inflightCount) == 1)
-                {
+            var ret = Observable.Create<T>(subj => {
+                if (Interlocked.Increment(ref inflightCount) == 1) {
                     isExecuting.OnNext(true);
                 }
 
-                var decrement = new SerialDisposable()
-                {
-                    Disposable = Disposable.Create(() =>
-                    {
-                        if (Interlocked.Decrement(ref inflightCount) == 0)
-                        {
+                var decrement = new SerialDisposable() { 
+                    Disposable = Disposable.Create(() => {
+                        if (Interlocked.Decrement(ref inflightCount) == 0) {
                             isExecuting.OnNext(false);
                         }
                     })
@@ -158,8 +152,7 @@ namespace ReactiveUI
                     .ObserveOn(scheduler)
                     .Finally(() => decrement.Disposable = Disposable.Empty)
                     .Do(x => executeResults.OnNext(x))
-                    .Catch<T, Exception>(ex =>
-                    {
+                    .Catch<T, Exception>(ex => {
                         exceptions.OnNext(ex);
                         return Observable.Empty<T>();
                     })
@@ -178,17 +171,14 @@ namespace ReactiveUI
         /// <value>The thrown exceptions.</value>
         public IObservable<Exception> ThrownExceptions { get; protected set; }
 
-        public IObservable<bool> CanExecuteObservable
-        {
-            get
-            {
+        public IObservable<bool> CanExecuteObservable {
+            get {
                 if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
                 return canExecute.StartWith(canExecuteLatest).DistinctUntilChanged();
             }
         }
 
-        public IObservable<bool> IsExecuting
-        {
+        public IObservable<bool> IsExecuting {
             get { return isExecuting.StartWith(inflightCount > 0); }
         }
 
@@ -203,15 +193,13 @@ namespace ReactiveUI
             return canExecuteLatest;
         }
 
-        event EventHandler canExecuteChanged;
         public event EventHandler CanExecuteChanged
         {
-            add
-            {
+            add { 
                 if (canExecuteDisp == null) canExecuteDisp = canExecute.Connect();
-                canExecuteChanged += value;
+                CanExecuteChangedEventManager.AddHandler(this, value); 
             }
-            remove { canExecuteChanged -= value; }
+            remove { CanExecuteChangedEventManager.RemoveHandler(this, value); }
         }
 
         public void Execute(object parameter)
@@ -251,10 +239,8 @@ namespace ReactiveUI
         /// from the command.</returns>
         public static IDisposable InvokeCommand<T>(this IObservable<T> This, ICommand command)
         {
-            return This.ObserveOn(RxApp.MainThreadScheduler).Subscribe(x =>
-            {
-                if (!command.CanExecute(x))
-                {
+            return This.ObserveOn(RxApp.MainThreadScheduler).Subscribe(x => {
+                if (!command.CanExecute(x)) {
                     return;
                 }
                 command.Execute(x);
@@ -274,10 +260,8 @@ namespace ReactiveUI
         {
             return This.CombineLatest(target.WhenAnyValue(commandProperty), (val, cmd) => new { val, cmd })
                 .ObserveOn(RxApp.MainThreadScheduler)
-                .Subscribe(x =>
-                {
-                    if (!x.cmd.CanExecute(x.val))
-                    {
+                .Subscribe(x => {
+                    if (!x.cmd.CanExecute(x.val)) {
                         return;
                     }
 

@@ -1043,9 +1043,7 @@ namespace ReactiveUI
                 vmFetcher = () =>
                 {
                     return new[] { 
-                        new ObservedChange<object, object>() { 
-                            Sender = null, PropertyName = null, Value = viewModel, 
-                        } 
+                        new ObservedChange<object, object>(null, null, viewModel)
                     };
                 };
             }
