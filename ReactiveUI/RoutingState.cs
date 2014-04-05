@@ -177,10 +177,6 @@ namespace ReactiveUI
             }
             else
             {
-                //NEIN!!! (ViewModel in Stack und Views kommen via IViewLocator!!) => ViewInitializeParams (object) => ruft Methode auf View auf und die Viewobjekte liegen nicht als Objekt in Stack (Memory!!)
-                // => NotInNavigationStack (bool)
-                // => TransitionType (Enum)
-
                 if (viewModelWithParams.RoutingParams != null && !viewModelWithParams.RoutingParams.NotInNavigationStack)
                 {
                     NavigationStack.Add(viewModelWithParams);
