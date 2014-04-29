@@ -120,13 +120,14 @@ namespace ReactiveUI.Android
         /// <exception cref="System.NotImplementedException"></exception>
         public string GetOrientation()
         {
-            var wm = Context.GetSystemService(WindowService) as IWindowManager;
-            if (wm == null) return null;
+            //var wm = Context.GetSystemService(WindowService).JavaCast<IWindowManager>();
+            //if (wm == null) return null;
 
-            var disp = wm.DefaultDisplay;
-            if (disp == null) return null;
+            //var disp = wm.DefaultDisplay;
+            //if (disp == null) return null;
 
-            return disp.Rotation.ToString();
+            //return disp.Rotation.ToString();
+            return PlatformOperations.GetOrientation();
         }
 
         /// <summary>
@@ -136,21 +137,22 @@ namespace ReactiveUI.Android
         /// <exception cref="System.NotImplementedException"></exception>
         public DeviceOrientation GetOrientationEnum()
         {
-            var wm = Context.GetSystemService(WindowService) as IWindowManager;
-            if (wm == null) return DeviceOrientation.None;
+            //var wm = Context.GetSystemService(WindowService).JavaCast<IWindowManager>();
+            //if (wm == null) return DeviceOrientation.None;
 
-            var disp = wm.DefaultDisplay;
-            if (disp == null) return DeviceOrientation.None;
+            //var disp = wm.DefaultDisplay;
+            //if (disp == null) return DeviceOrientation.None;
 
-            if (disp.Orientation == 1)
-            {
-                return DeviceOrientation.Portrait;
-            }
-            if (disp.Orientation == 2)
-            {
-                return DeviceOrientation.Landscape;
-            }
-            return DeviceOrientation.None;
+            //if (disp.Orientation == 0 || disp.Orientation == 2)
+            //{
+            //    return DeviceOrientation.Portrait;
+            //}
+            //if (disp.Orientation == 1 || disp.Orientation == 3)
+            //{
+            //    return DeviceOrientation.Landscape;
+            //}
+            //return DeviceOrientation.None;
+            return PlatformOperations.GetOrientationEnum();
         }
     }
 }
