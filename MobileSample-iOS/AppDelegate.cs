@@ -20,20 +20,34 @@ namespace MobileSample_iOS
     {
         public override bool WillFinishLaunching(UIApplication application, NSDictionary launchOptions)
         {
-            // NB: Hax
-            var r = Locator.CurrentMutable;
-           // (new ReactiveUI.Xaml.ServiceLocationRegistration()).Register();
-         //   (new ReactiveUI.Routing.ServiceLocationRegistration()).Register();
-            (new ReactiveUI.Cocoa.Registrations()).Register((f, t) => r.Register(f, t));
-            (new ReactiveUI.Mobile.Registrations()).Register((f, t) => r.Register(f, t));
 
-            r.Register(() => new AppBootstrapper(), typeof(IApplicationRootState));
-            r.Register(() => new DummySuspensionDriver(), typeof(ISuspensionDriver));
+            var resolver = Locator.CurrentMutable;
 
-            var host = r.GetService<ISuspensionHost>();
-            host.SetupDefaultSuspendResume();
+            //resolver.RegisterConstant(new AndroidLogger(), typeof(ILogger));
+
+            // Register ReactiveUI
+            this.Log().Debug("AppDelegate.InitializeReactiveUI()");
+
+            // Register ReactiveUI stuff
+            (new ReactiveUI.Registrations()).Register((f, t) => resolver.Register(f, t));
+
+            // Register iOS stuff 
+            (new ReactiveUI.Cocoa.Registrations()).Register((f, t) => resolver.Register(f, t));
+            
 
             return true;
+        }
+
+        public override void RegisterServices()
+        {
+            base.RegisterServices();
+
+            (new ReactiveUI.Mobile.Registrations()).Register((f, t) => r.Register(f, t));
+        }
+
+        public override void RegisterViewTypes()
+        {
+            throw new NotImplementedException();
         }
     }
 

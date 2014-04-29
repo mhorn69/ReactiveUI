@@ -70,7 +70,7 @@ namespace ReactiveUI
 
     public interface IRoutableViewModelWithParams : IRoutableViewModel
     {
-        IRoutingParams RoutingParams { get; }
+        IRoutingParams RoutingParams { get; set; }
         IRoutableViewModel RoutableViewModel { get; }
     }
 
@@ -92,7 +92,7 @@ namespace ReactiveUI
 
 
 
-        public IRoutingParams RoutingParams { get; private set; }
+        public IRoutingParams RoutingParams { get;  set; }
         public IRoutableViewModel RoutableViewModel { get; private set; }
         event PropertyChangingEventHandler IReactiveObject.PropertyChanging
         {

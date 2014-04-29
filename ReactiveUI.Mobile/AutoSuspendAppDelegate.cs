@@ -8,6 +8,7 @@ using System.Reactive.Subjects;
 using System.Collections.Generic;
 using System.Reactive.Disposables;
 using ReactiveUI;
+using ReactiveUI.Cocoa;
 using Splat;
 
 namespace ReactiveUI.Mobile
@@ -31,9 +32,9 @@ namespace ReactiveUI.Mobile
     /// AutoSuspend-based App Delegate. To use AutoSuspend with iOS, change your
     /// AppDelegate to inherit from this class, then call:
     /// 
-    /// Locator.Current.GetService<ISuspensionHost>().SetupDefaultSuspendResume();
+    /// Locator.Current.GetService&lt;ISuspensionHost&gt;().SetupDefaultSuspendResume();
     /// </summary>
-    public abstract class AutoSuspendAppDelegate : UIApplicationDelegate, IEnableLogger
+    public abstract class AutoSuspendAppDelegate : AppDelegateBase
     {
         readonly Subject<UIApplication> _finishedLaunching = new Subject<UIApplication>();
         readonly Subject<UIApplication> _activated = new Subject<UIApplication>();
@@ -55,6 +56,16 @@ namespace ReactiveUI.Mobile
         }
 
         public IDictionary<string, string> LaunchOptions { get; protected set; }
+
+        public override void RegisterServices()
+        {
+            base.RegisterServices();
+
+            var resolver = Locator.CurrentMutable;
+
+            // Register iOS stuff 
+            (new ReactiveUI.Mobile.Registrations()).Register((f, t) => resolver.Register(f, t));
+        }
 
         public AutoSuspendAppDelegate()
         {
