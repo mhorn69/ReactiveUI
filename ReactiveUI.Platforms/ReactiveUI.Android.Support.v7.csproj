@@ -86,7 +86,6 @@
     <Compile Include="Android\PlatformOperations.cs" />
     <Compile Include="Android\ReactiveActivity.cs" />
     <Compile Include="Android\ReactiveListAdapter.cs" />
-    <Compile Include="Android\ReactivePagerAdapter.cs" />
     <Compile Include="Android\ViewCommandExtensions.cs" />
     <Compile Include="ComponentModelTypeConverter.cs" />
     <Compile Include="FlexibleCommandBinder.cs" />
