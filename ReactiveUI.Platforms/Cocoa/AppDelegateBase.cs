@@ -15,10 +15,12 @@ namespace ReactiveUI.Cocoa
 
         public override bool WillFinishLaunching(UIApplication application, NSDictionary launchOptions)
         {
+            this.Log().Debug("WillFinishLaunching");
+
             RegisterServices();
             RegisterViewTypes();
 
-            return base.WillFinishLaunching(application, launchOptions);
+            return true;
         }
 
         /// <summary>
@@ -29,7 +31,7 @@ namespace ReactiveUI.Cocoa
             var resolver = Locator.CurrentMutable;
 
             // Register ReactiveUI
-            this.Log().Debug("AppDelegateBase.InitializeReactiveUI()");
+            this.Log().Debug("InitializeReactiveUI()");
 
             // Register ReactiveUI stuff
             (new ReactiveUI.Registrations()).Register((f, t) => resolver.Register(f, t));

@@ -59,6 +59,9 @@ namespace ReactiveUI.Mobile
 
         public override void RegisterServices()
         {
+
+            this.Log().Debug("RegisterServices");
+
             base.RegisterServices();
 
             var resolver = Locator.CurrentMutable;
